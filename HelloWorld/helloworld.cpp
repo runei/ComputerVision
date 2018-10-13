@@ -15,8 +15,8 @@ int main(int argc, char** argv )
         std::cout << "No image data \n";
         return -1;
     }
-    namedWindow("Display Image", cv::WINDOW_AUTOSIZE );
-    imshow("Display Image", image);
+    namedWindow("Hello Lena", cv::WINDOW_AUTOSIZE );
+    imshow("Hello Lena", image);
     cv::waitKey(0);
     return 0;
 }

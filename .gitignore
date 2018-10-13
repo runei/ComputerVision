@@ -1,0 +1,6 @@
+*.cmake
+*.json
+CMakeFiles/
+CMakeCache.txt
+Makefile
+helloworld

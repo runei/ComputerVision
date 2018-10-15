@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.8)
+project( mix_img )
+find_package( OpenCV REQUIRED )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+add_executable( mix_img mix_img.cpp )
+target_link_libraries( mix_img ${OpenCV_LIBS} )

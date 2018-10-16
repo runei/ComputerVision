@@ -19,14 +19,14 @@
 int getOverallBrightness(const cv::Mat & image)
 {
 	int result = 0;
-	cv::Mat temp;
+	// cv::Mat temp;
 
-	cv::cvtColor(image, temp, cv::COLOR_BGR2HSV);
+	// cv::cvtColor(image, temp, cv::COLOR_BGR2HSV);
 
 	// std::cout << image.channels() << "\n";
 	// exit(0);
 
-/*
+
 	// not efficient
 	for (auto it = image.begin<cv::Vec3b>(), end = image.end<cv::Vec3b>(); it != end; ++it)
 	{
@@ -37,13 +37,13 @@ int getOverallBrightness(const cv::Mat & image)
 		}
 		result += temp / image.channels();
 	}
-*/
 
-	for (auto it = temp.begin<cv::Vec3b>(), end = temp.end<cv::Vec3b>(); it != end; ++it)
+
+	/*for (auto it = temp.begin<cv::Vec3b>(), end = temp.end<cv::Vec3b>(); it != end; ++it)
 	{
 		result += (*it)[2];
-	}
-	return result / temp.total();
+	}*/
+	return result / image.total();
 }
 
 cv::Mat readImage(char* file_name)
@@ -90,7 +90,8 @@ cv::Mat mixImages(const cv::Mat & image1, const cv::Mat & image2)
 	cv::split(image1, channels_1);
 	cv::split(image2, channels_2);
 
-	const std::vector<cv::Mat> final_channel = {channels_2[0], channels_2[1], channels_1[2]};
+	// const std::vector<cv::Mat> final_channel = {channels_2[0], channels_2[1], channels_1[2]};
+	const std::vector<cv::Mat> final_channel = {channels_1[0], channels_1[1], channels_2[2]};
 	cv::merge(final_channel, result);
 
 	return result;

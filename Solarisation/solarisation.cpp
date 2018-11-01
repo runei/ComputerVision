@@ -18,22 +18,49 @@ public:
 
 } Transform;
 
-/*int x1 = SrcPtInt[0].x;	int y1 = 511 - SrcPtInt[0].y;
-int x2 = SrcPtInt[1].x;	int y2 = 511 - SrcPtInt[1].y;
-double        dx = x1 - x2;	double		  dy = y1 - y2;
-float x0 = (float)(x1 + x2) / 2;
-float a = (float)(-2.0*dy / pow(dx, 3.0));
-float b = (float)(-3.0 / 2.0*dy / dx);
-float c = (float)((y1 + y2) / 2.0 + b*x0);*/
-
 Transform::Transform(const cv::Point2d & p1, const cv::Point2d & p2)
 {
+	/*
+		y = a(x - x_0)³ - bx + c
+		y_1 = a(x_1 - x_0)³ - bx_1 + c
+		y_2 = a(x_2 - x_0)³ - bx_2 + c
+
+		derivative of the function
+		0 = 3a(x - x_0)² - b
+		0 = 3a(x_1 - x_0)² - b
+		0 = 3a(x_2 - x_0)² - b
+
+		b/3a = (x_1 - x_0)² = (x_2 - x_0)
+		x_1 - x_0 = x_0 - x_2
+		2x_0 = x_1 + x_2
+		x_0 = (x_1 + x_2) / 2
+
+		y_1 - y_2 = (b/3)*((x_1 - x_0) - (x_2 - x_0)) - b(x_1 - x_2)
+		y_1 - y_2 = (b/3)*(x_1 - x_2) - b(x_1 - x_2)
+		y_1 - y_2 = -2/3*b * (x_1 - x_2)
+
+
+		->b
+		y_1 - y_2 = -2/3*b * (x_1 - x_2)
+		-2/3*b = (y_1 - y_2) / (x_1 - x_2)
+		b = -3/2 * (y_1 - y_2) / (x_1 - x_2)
+
+		->a
+		b/3a = (x_1 - x_0)²
+		a = b / 3 / (x_1 - x_0)²
+		a = -3/2 * (y_1 - y_2) / (x_1 - x_2) / 3 / (x_1 - ((x_1 + x_2) / 2))²
+		a = -(2* (y_1 - y_2)) / (x_1 - x_2)³ #wolframalpha
+
+		->c
+	*/
+
+
 	const cv::Point2d diff = p1 - p2;
 	this->p0 = (p1 + p2) / 2;
+
 	this->a = (-2.0*diff.y / pow(diff.x, 3.0));
 	this->b = (-3.0 / 2.0 * diff.y / diff.x);
 	this->c = ((p1.y + p2.y) / 2.0 + b*diff.x);
-	// std::cout << "a = " << a << "\n" << "b = " << b << "\n" << "c = " << c << "\n" << "x0 = " << p0.x << "\n";
 }
 
 double Transform::solarise(const double x)
@@ -92,18 +119,30 @@ static void onMouse(int event, int x, int y, int flags, void* params)
 		{
 			Transform transform(solarised->points[0], solarised->points[1]);
 
+
 			cv::Mat solarise_lut(1, 256, CV_8U);
 			for (int i = 0; i < 256; ++i)
 			{
 				solarise_lut.at<uchar>(i) = transform.solarise(i);
 			}
 
+/*			cv::Mat gray(solarised->image.size(), CV_8U);
+			gray = 0;
+			cv::Point2d ant(0, transform.solarise(0));
+			for (int i = 1; i < 256; ++i)
+			{
+				// std::cout << transform.solarise(i) << "\n";
+				cv::Point2d np(i, transform.solarise(i));
+				cv::line(gray, ant, np, CV_RGB(255, 255, 255));
+				ant = np;
+			}
+*/
 			cv::Mat final;
 			cv::LUT(solarised->image, solarise_lut, final);
 			cv::imshow("Final", final);
 
 			// cv::line(solarised->gray_curve_image, solarised->points[0], solarised->points[1], CV_RGB(255, 255, 255));
-			// cv::imshow("GrayCurve", solarised->gray_curve_image);
+			// cv::imshow("GrayCurve", gray);
 			solarised->points.clear();
 		}
 	}

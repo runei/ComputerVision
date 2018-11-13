@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.8)
+project( orient_hist )
+find_package( OpenCV REQUIRED )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+add_executable( orient_hist orient_hist.cpp )
+target_link_libraries( orient_hist ${OpenCV_LIBS} )

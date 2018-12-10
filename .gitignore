@@ -9,3 +9,4 @@ solarisation
 Ex2_start.cpp
 orient_hist
 match_templates
+harris_detector
